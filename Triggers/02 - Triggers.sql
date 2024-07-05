@@ -1,8 +1,8 @@
 -- Crear un trigger que permita gestionar una venta en la cula se debe actualizar la existencia del producto, vendido, bajo las siguientes condiciones
-
+/*
 1) Verificar si la existencia es suficiente si la existencia no es sufuciente cancelar la operacion,
 2)Si es suficiente agregar la venta y disminuir el stock sobre el producto 
-
+*/
 create or alter trigger tg_VerificarInsertOrders
 on Northwind.dbo.[Order Details]
 after insert
@@ -17,16 +17,15 @@ as begin
     if @Quiantity>@UnitsInStock
     begin 
         rollback transaction
-          raiserro("la cantida supera el estock",1,16);
+          raiserror('La cantida supera el estock',1,16);
     end 
     else if @Quiantity<=@UnitsInStock
     begin 
-        update Northwind.dbo.[Products] set UnitsInStock=(@UnitsInStock-@Quiantity) where p.ProductID=@ProductoID;
+        update Northwind.dbo.[Products] set UnitsInStock=(@UnitsInStock-@Quiantity) where ProductID=@ProductoID;
         print('Ya se actualizo');
     end
     rollback
 end
-
 
 create or alter procedure ps_insertOrder
     @ProductID int, 
@@ -43,14 +42,12 @@ begin
     end
     else 
     begin
-
+          raiserror('El producto no se encuentra',1,16);
     end
 end 
 
-select * from Northwind.dbo.Orders;
-select * from Northwind.dbo.Products where ProductID=1;
-select * from Northwind.dbo.[Order Details];
 
 declare  @idProducto int=1, @cantidad smallint=9, @Descuento real=0.5, @OID int=10400;
 exec ps_insertOrder @ProductID=@idProducto, @Quantity=@cantidad, @Discount=@Descuento, @OrderID=@OID;
 
+select * from [Order Details] where OrderID=10400

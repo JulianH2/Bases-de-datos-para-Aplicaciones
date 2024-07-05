@@ -12,3 +12,6 @@ Este repositorio contiene los siguientes tópicos de base de datos para aplicaci
 5. Manejo de Transacciones
 6. Segurida en Bases de datos 
 5. Despliegue de Aplicaciones
+
+---
+!['Collage from My'](./img/Imagen.jpg)
