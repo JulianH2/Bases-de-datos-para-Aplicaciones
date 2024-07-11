@@ -27,24 +27,24 @@ as begin
     rollback
 end
 
-create or alter procedure ps_insertOrder
-    @ProductID int, 
-    @OrderID int, 
-    @Quantity smallint,
-    @Discount real
-as
-begin
-    declare @UnitPrice money;
-    if exists(select 1 from Northwind.dbo.Products where ProductID=@ProductID)
-    begin
-        select @UnitPrice=p.UnitPrice from Northwind.dbo.Products as p where ProductID=@ProductID;
-        insert into Northwind.dbo.[Order Details](OrderID, ProductID, UnitPrice, Quantity, Discount) values(@OrderID, @ProductID, @UnitPrice, @Quantity, @Discount)
-    end
-    else 
-    begin
-          raiserror('El producto no se encuentra',1,16);
-    end
-end 
+-- create or alter procedure ps_insertOrder
+--     @ProductID int, 
+--     @OrderID int, 
+--     @Quantity smallint,
+--     @Discount real
+-- as
+-- begin
+--     declare @UnitPrice money;
+--     if exists(select 1 from Northwind.dbo.Products where ProductID=@ProductID)
+--     begin
+--         select @UnitPrice=p.UnitPrice from Northwind.dbo.Products as p where ProductID=@ProductID;
+--         insert into Northwind.dbo.[Order Details](OrderID, ProductID, UnitPrice, Quantity, Discount) values(@OrderID, @ProductID, @UnitPrice, @Quantity, @Discount)
+--     end
+--     else 
+--     begin
+--           raiserror('El producto no se encuentra',1,16);
+--     end
+-- end 
 
 
 declare  @idProducto int=1, @cantidad smallint=9, @Descuento real=0.5, @OID int=10400;

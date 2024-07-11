@@ -13,8 +13,6 @@ else
     print 'El numero es negativo';
 end;
 
-
-
 -- Crear un SP 
 -- create procedure procedure_ciclo
 -- as 
@@ -29,7 +27,6 @@ end;
 --         set @i=@i+1;
 --     end;
 -- end;
-
 
 declare @ii as int;
 
@@ -57,4 +54,3 @@ drop procedure procedure_ciclo;
 
 -- execute procedure_suma 5, 7
 -- drop procedure procedure_ciclo;
-   
