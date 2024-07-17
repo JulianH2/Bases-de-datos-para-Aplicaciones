@@ -100,14 +100,16 @@ begin
             else 
             begin
                 raiserror('El producto no se encuentra',1,16);
+                rollback
             end
             commit transaction
         end try
-        begin catch
+        begin catch 
+            rollback transaction
             declare @mensajeError varchar(400) 
             set @mensajeError = error_message()
             print @mensajeError
-            rollback transaction
+           
         end catch
 end
 
@@ -118,5 +120,3 @@ select * from Products where ProductID=9
 delete from Orders where OrderID=11078
 delete from Products where ProductID=9
 delete from [Order Details] where OrderID=11078
-
-
