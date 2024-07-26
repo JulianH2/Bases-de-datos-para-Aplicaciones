@@ -103,11 +103,11 @@ begin
 end
 
 
-exec sp_CargaIncrementalStudents
+-- exec sp_CargaIncrementalStudents
 go
 
-truncate table StudentsC1
-truncate table StudentsC2
+ truncate table StudentsC1
+ truncate table StudentsC2
 
 go 
 
@@ -140,3 +140,14 @@ begin
         print @mensajeError
     end catch
 end
+go
+create or alter proc sp_truncarTabla 
+@tabla NVARCHAR(50)
+as
+begin
+    declare @sql NVARCHAR(50);
+
+    set @sql=N'truncate table '+ quotename(@Tabla);
+   exec sp_executesql @sql
+end
+

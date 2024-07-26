@@ -7,8 +7,8 @@
 
 
 -- 2)
-create or alter proc sp_deleteOrdenCompra 
- @OrderID int
+create or alter proc sp_deleteOrdenCompra
+    @OrderID int
 as
 begin
     begin transaction
@@ -19,7 +19,8 @@ begin
 		merge into products as tgt
         using (
             select Quantity, ProductID
-            from [Order Details] where OrderID = @OrderID
+    from [Order Details]
+    where OrderID = @OrderID
         ) AS src 
         ON tgt.ProductID = src.ProductID
         when MATCHED THEN
@@ -28,8 +29,8 @@ begin
 			delete Orders where OrderID=@OrderID;
 		
 		/* Usando inner */
-			update Products set UnitsInStock= p.UnitsInStock+od.Quantity from Products as p 
-			join [Order Details] as od on p.ProductID=od.ProductID where OrderID=11077
+			update Products set UnitsInStock= p.UnitsInStock+od.Quantity from Products as p
+        join [Order Details] as od on p.ProductID=od.ProductID where OrderID=11077
 			delete [Order Details] where OrderID=@OrderID;
 			delete Orders where OrderID=@OrderID;
        /* commit transaction */
@@ -44,11 +45,17 @@ end
 
 exec sp_deleteOrdenCompra @OrderID=11077
 
-select * from Products where ProductID=2
-select * from Products where ProductID=3
+select *
+from Products
+where ProductID=2
+select *
+from Products
+where ProductID=3
 
-select * from [Order Details] where OrderID=11077
-  rollback transaction
+select *
+from [Order Details]
+where OrderID=11077
+rollback transaction
 
 go
 
@@ -71,21 +78,21 @@ Create or alter procedure usp_actualizarPrecio
 as
 begin
     BEGIN TRANSACTION
-        BEGIN TRY
+    BEGIN TRY
             declare
             @price money
             set @price= (select UnitPrice
-                from Products
-                where ProductID = @Producto)
+    from Products
+    where ProductID = @Producto)
             Update Products
             Set UnitPrice = @NewPrice
             where ProductID = @Producto
             Print ('se actulizo la lista de precios')
             insert into ProductPriceHistory
-                    (productid,oldprice,newprice)
-                select ProductID, @price, @NewPrice
-                from Products
-                where ProductID = @Producto
+        (productid,oldprice,newprice)
+    select ProductID, @price, @NewPrice
+    from Products
+    where ProductID = @Producto
             COMMIT TRANSACTION
         END TRY
         BEGIN CATCH
@@ -99,7 +106,8 @@ GO
 
 exec usp_actualizarPrecio @Producto = 6, @NewPrice = 32.00;
 --crear un store procedure que elimine una orden y orden details y actulizar el stock
-select * from ProductPriceHistory;
+select *
+from ProductPriceHistory;
 
 go
 -- 3)
@@ -121,13 +129,14 @@ create or alter procedure ps_insertOrder
     @ShipPostalCode nvarchar(10) = null,
     @ShipCountry nvarchar(15),
     @POT productsOrders readonly
-as 
-begin 
+as
+begin
     begin transaction
-        begin try
+    begin try
             -- Insertar en la tabla Orders
-            insert into Northwind.dbo.Orders(CustomerID, EmployeeID,OrderDate, RequiredDate, ShippedDate,ShipVia,Freight,ShipName, ShipAddress, ShipCity, ShipRegion, ShipPostalCode, ShipCountry) 
-            values(@CustomerID, @EmployeeID,@OrderDate, @RequiredDate, @ShippedDate,@ShipVia,@Freight,@ShipName, @ShipAddress, @ShipCity, @ShipRegion, @ShipPostalCode, @ShipCountry)
+            insert into Northwind.dbo.Orders
+        (CustomerID, EmployeeID,OrderDate, RequiredDate, ShippedDate,ShipVia,Freight,ShipName, ShipAddress, ShipCity, ShipRegion, ShipPostalCode, ShipCountry)
+    values(@CustomerID, @EmployeeID, @OrderDate, @RequiredDate, @ShippedDate, @ShipVia, @Freight, @ShipName, @ShipAddress, @ShipCity, @ShipRegion, @ShipPostalCode, @ShipCountry)
             
             -- Obtener el Id Insertado en la orden 
             declare @OrderID int;
@@ -137,34 +146,40 @@ begin
             DECLARE @ProductID int, @Quantity smallint, @Discount real, @precioVenta money;
             
             DECLARE cur CURSOR FOR 
-            SELECT ProductID, Quantity, Discount FROM @POT;
+            SELECT ProductID, Quantity, Discount
+    FROM @POT;
 
             OPEN cur;
             FETCH NEXT FROM cur INTO @ProductID, @Quantity,@Discount;
             -- Insertar en detalle Orden el producto
                 --Obtener el Precio del producto a insertar
             while @@FETCH_STATUS =0
-            begin 
-                if exists(select 1 from Northwind.dbo.Products where ProductID=@ProductID  )
+            begin
+        if exists(select 1
+        from Northwind.dbo.Products
+        where ProductID=@ProductID  )
                 begin
-                    select @precioVenta = p.UnitPrice from Northwind.dbo.Products as p where ProductID=@ProductID;
-                    insert into Northwind.dbo.[Order Details](OrderID, ProductID, UnitPrice, Quantity, Discount) values(@OrderID, @ProductID, @precioVenta, @Quantity, @Discount)
-                    --Actualizar la tabla products reducioendo el unitsinstock con cantidad vendida
-                    update products set UnitsInStock = UnitsInStock - @Quantity where ProductID = @ProductID
-                end
+            select @precioVenta = p.UnitPrice
+            from Northwind.dbo.Products as p
+            where ProductID=@ProductID;
+            insert into Northwind.dbo.[Order Details]
+                (OrderID, ProductID, UnitPrice, Quantity, Discount)
+            values(@OrderID, @ProductID, @precioVenta, @Quantity, @Discount)
+            --Actualizar la tabla products reducioendo el unitsinstock con cantidad vendida
+            update products set UnitsInStock = UnitsInStock - @Quantity where ProductID = @ProductID
+        end
                 else 
                 begin
-                    raiserror('El producto no se encuentra',1,16,@ProductID);
-                    rollback
-                end
-            
-            fetch next from cur into @productid, @quantity, @discount;
-            end
-               close cur;
-        deallocate cur;
-            -- commit transaction
+            raiserror('El producto no se encuentra',1,16,@ProductID);
+            rollback
+        end
 
-     
+        fetch next from cur into @productid, @quantity, @discount;
+
+        close cur;
+        deallocate cur;
+    -- commit transaction
+    end
         end try
         begin catch 
             rollback transaction
@@ -175,7 +190,7 @@ begin
 end
 go
 create type productsOrders as table(
-    ProductID int, 
+    ProductID int,
     Quantity smallint,
     Discount real
 )
@@ -184,8 +199,12 @@ create type productsOrders as table(
 DECLARE @TablaProducto productsOrders;
 
 -- Insertar datos en la tabla de parámetros
-INSERT INTO @TablaProducto(ProductID, Quantity, Discount)
-VALUES (1, 1, 0), (2, 8, 0), (3, 10, 0);
+INSERT INTO @TablaProducto
+    (ProductID, Quantity, Discount)
+VALUES
+    (1, 1, 0),
+    (2, 8, 0),
+    (3, 10, 0);
 
 -- Visualizar los datos de la tabla de parámetros
 -- SELECT * FROM @TablaProducto;
@@ -202,12 +221,46 @@ EXEC ps_insertOrder
     @ShipCountry = 'USA', -- Valor de ejemplo para ShipCountry
     @POT = @TablaProducto;
 GO
-select max(OrderID) from [Order Details]
-select max(OrderID) from [Orders]
-select * from Products where ProductID=9
+select max(OrderID)
+from [Order Details]
+select max(OrderID)
+from [Orders]
+select *
+from Products
+where ProductID=9
 
-select * from Orders where OrderID=1
-select * from Products where ProductID=9
-select * from [Orders] where OrderDate=18-02-2023
+select *
+from Orders
+where OrderID=1
+select *
+from Products
+where ProductID=9
+select *
+from [Orders]
+where OrderDate=18-02-2023
 
 ROLLBACK TRANSACTION
+
+select *
+from StudentsC1
+select *
+from StudentsC2
+
+go
+
+create or alter proc sp_VentasClienteAnio
+@fullname varchar(50),
+@anioInicial int,
+@anioFinal int
+as
+begin
+    select c.CompanyName, sum(od.Quantity*od.UnitPrice) as 'Total_Ventas'
+    from Customers as c
+        left join Orders as o on c.CustomerID=o.CustomerID
+        left join [Order Details] as od on o.OrderID= od.OrderID
+        join Employees as e on e.EmployeeID=o.EmployeeID
+    where concat(e.FirstName,' ', e.LastName)=@fullname and
+        datepart(year,o.OrderDate)  between @anioInicial and @anioFinal
+        or c.CustomerID is null
+    group by c.CompanyName
+end
