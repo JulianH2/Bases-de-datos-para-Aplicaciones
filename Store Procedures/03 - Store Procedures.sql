@@ -14,7 +14,7 @@ declare @resultado float
 exec sp_AreaCirculo @radio=10.5, @area = @resultado output
 
 print  cast(@resultado as varchar)
-
+go
 create or alter proc sp_ObtenerInformacionEmpleado
 @employeeID int,
 @apellido varchar(20) output,
@@ -40,6 +40,7 @@ print('El nombre es: '+@firstName)
 print('El apellido es: '+@lastName)
 
 -- 1
+go
 create or alter proc sp_ObtenerInformacionEmpleado
     @employeeID int,
     @apellido varchar(20) output,
@@ -69,7 +70,7 @@ begin
         print('El Empleado no se encuentra')
     end
 end
-
+go
 declare @firstName varchar(100), @lastName varchar(10)
 
 exec sp_ObtenerInformacionEmpleado @employeeID=10, @nombre= @firstName output, @apellido= @lastName output
@@ -78,6 +79,7 @@ print('El nombre es: '+@firstName)
 print('El apellido es: '+@lastName)
 
 -- 2
+go
 create or alter proc sp_TotalCampos
     @total int output,
     @fechaInicio date,

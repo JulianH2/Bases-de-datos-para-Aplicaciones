@@ -1,4 +1,4 @@
-/*
+
 -- Sintaxis 
 /*
 create trigger --Nombre
@@ -32,7 +32,7 @@ insert into tabla1
 values(1, 'Nombre')
 
 -- trigger que verifica el evento que se ejecuta
-
+go
 create or alter trigger tg_VerificaDelete
 on tabla1 after delete
 as begin
@@ -42,7 +42,7 @@ end
 delete tabla1 where id=1
 
 -- trigger que verifica el evento que se ejecuta
-
+go
 create or alter trigger tg_VerificaUpdate
 on tabla1 after update
 as begin
@@ -50,7 +50,7 @@ as begin
 end
 
 update tabla1 set nombre='Nombre Nuevo' where id = 1 
-
+go
 create or alter trigger tg_verificarContenidoInsert
 on tabla1 after insert  
 as begin
@@ -67,7 +67,7 @@ values(3, 'Nombre 3')
 insert into tabla1
 values(4, 'Nombre 4'),
     (5, 'Nombre 5')
-
+go
  create or alter trigger tg_VerificarInsertCategories 
  on Categories
  after insert
@@ -81,7 +81,7 @@ insert into Categories
 values
     ('Categoria nueva', 'Prueba triggers')
 
-
+go
 create or alter trigger tg_VerificarIUpdateCategories
  on Categories
  after update
@@ -96,7 +96,7 @@ begin transaction
 update Categories set CategoryName='CategoriaOtra', [Description] = 'Si esta bien' where CategoryID=9
 rollback
 
-
+go
 
 create or alter trigger tg_VerificarInsertDelete
 on Categories 
@@ -117,7 +117,7 @@ as begin
 end
 
 
-
+go
 select * from Categories
 delete Categories where CategoryName='Categoria 10';
 insert into Categories(CategoryName,[Description]) values('Categoria 10','Pinpon')
@@ -132,7 +132,9 @@ create table empleado
     Nombre varchar(50) not null,
     Salario money not null
 )
-*/
+
+
+go
 
 create or alter trigger tg_VerifiarSalario 
 on empleado after insert, delete
